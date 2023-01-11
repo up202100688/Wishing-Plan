@@ -28,6 +28,8 @@ Wishting Plan is an open source project. We welcome contributions from the commu
 -   Use node version "^12.19.0 || ^14.15.0 || ^16.13.0 || ^18.12.0"
     -   This is because of the compatibility of next-auth@4.17.0
 -   Install yarn globally `npm install -g yarn`
+-   Insdall Docker e.g., Docker Desktop for Windows or Docker Engine for Linux. See [Docker installation](https://docs.docker.com/get-docker/) for more information.
+    -   This is to have a local database for development.
 
 #### Windows
 
@@ -38,6 +40,9 @@ Wishting Plan is an open source project. We welcome contributions from the commu
 -   Clone the repository
 -   Create local .env `cp .env.example .env` and fill in the values
 -   Install dependencies `yarn install` or just `yarn`
+-   Start the database `docker-compose up -d`
+-   Run `yarn db-push` to migrate the database
+-   Run `yarn db-seed` to seed the database with test data
 -   Run the development server `yarn dev`
 
 ## [Project Board](https://app.zenhub.com/workspaces/wishing-plan-637b3ad68b9646001dfac86a/board)
