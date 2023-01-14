@@ -95,7 +95,7 @@ export function HeroSection() {
 						spacing={{ base: 4, sm: 6 }}
 						direction={{ base: 'column', sm: 'row' }}
 					>
-						<Link as={NextLink} href={'/auth/signin'}>
+						<Link as={NextLink} href={'/'}>
 							<Button
 								rounded={'full'}
 								size={'lg'}
