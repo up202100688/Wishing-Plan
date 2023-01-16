@@ -78,7 +78,7 @@ export const PlanScreen = () => {
 					title: 'Plan updated',
 					description: `Your plan has been updated`,
 					status: 'success',
-					duration: 5000,
+					duration: 2000,
 					isClosable: true,
 					position: 'top',
 				});
@@ -88,7 +88,7 @@ export const PlanScreen = () => {
 					title: 'Error',
 					description: err.message,
 					status: 'error',
-					duration: 5000,
+					duration: 2000,
 					isClosable: true,
 					position: 'top',
 				});
@@ -121,7 +121,7 @@ export const PlanScreen = () => {
 					title: 'Wish created',
 					description: `${title} been added to your plan`,
 					status: 'success',
-					duration: 5000,
+					duration: 2000,
 					isClosable: true,
 					position: 'top',
 				});
@@ -131,7 +131,7 @@ export const PlanScreen = () => {
 					title: 'Error',
 					description: err.message,
 					status: 'error',
-					duration: 5000,
+					duration: 2000,
 					isClosable: true,
 					position: 'top',
 				});
@@ -164,7 +164,7 @@ export const PlanScreen = () => {
 					title: 'Wish updated',
 					description: `${title} been updated`,
 					status: 'success',
-					duration: 5000,
+					duration: 2000,
 					isClosable: true,
 					position: 'top',
 				});
@@ -174,7 +174,7 @@ export const PlanScreen = () => {
 					title: 'Error',
 					description: err.message,
 					status: 'error',
-					duration: 5000,
+					duration: 2000,
 					isClosable: true,
 					position: 'top',
 				});
@@ -193,7 +193,7 @@ export const PlanScreen = () => {
 					title: 'Wish deleted',
 					description: `Your wish has been deleted`,
 					status: 'success',
-					duration: 5000,
+					duration: 2000,
 					isClosable: true,
 					position: 'top',
 				});
@@ -203,7 +203,7 @@ export const PlanScreen = () => {
 					title: 'Error',
 					description: err.message,
 					status: 'error',
-					duration: 5000,
+					duration: 2000,
 					isClosable: true,
 					position: 'top',
 				});
@@ -218,9 +218,7 @@ export const PlanScreen = () => {
 					spacing={{ base: 0, lg: 8 }}
 				>
 					<EmptyStateWrapper
-						isLoading={
-							isLoading || isLoadingCurrency
-						}
+						isLoading={isLoading || isLoadingCurrency}
 						data={plan}
 						EmptyComponent={
 							<Center>
@@ -347,7 +345,7 @@ export const PlanScreen = () => {
 						'Wish moved from ' + oldIndex + ' to ' + newIndex + '.',
 					description: 'Your wish has been moved',
 					status: 'success',
-					duration: 5000,
+					duration: 2000,
 					isClosable: true,
 					position: 'top',
 				});

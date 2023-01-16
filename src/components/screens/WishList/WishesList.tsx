@@ -12,11 +12,12 @@ export const WishesList = ({
 	return (
 		<Container maxW="container.xxl">
 			<SimpleGrid minChildWidth="11rem" spacing="40px">
-				{wishes.map((wish) => (
+				{wishes.map((wish, index) => (
 					<WishCard
 						refreshListFunc={refreshListFunc}
 						key={wish.id}
 						wish={wish}
+						index={index}
 					/>
 				))}
 			</SimpleGrid>
