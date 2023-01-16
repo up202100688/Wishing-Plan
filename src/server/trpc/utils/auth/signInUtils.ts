@@ -4,9 +4,9 @@ import type { User } from 'next-auth';
 import type { AdapterUser } from 'next-auth/adapters';
 
 export async function signInChecks(user: User | AdapterUser) {
+	await hasSettingsCheck(user);
+	await hasPlanCheck(user);
 	if (user.name) {
-		await hasSettingsCheck(user);
-		await hasPlanCheck(user);
 		return true;
 	} else {
 		// User has no custom name yet, redirect him
