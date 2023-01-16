@@ -211,14 +211,16 @@ export const PlanScreen = () => {
 	};
 
 	return (
-		<>
+		<Content>
 			<Container maxW={'7xl'} flex={'1 0 auto'} py={8}>
 				<Stack
 					direction={{ base: 'column', lg: 'row' }}
 					spacing={{ base: 0, lg: 8 }}
 				>
 					<EmptyStateWrapper
-						isLoading={isLoading && isLoadingCurrency}
+						isLoading={
+							isLoading && isLoadingCurrency && isLoadingWishes
+						}
 						data={plan}
 						EmptyComponent={
 							<Center>
@@ -245,7 +247,11 @@ export const PlanScreen = () => {
 						maxW={{ lg: 'calc(100% - 16rem)' }}
 					>
 						<EmptyStateWrapper
-							isLoading={isLoadingWishes && isLoadingCurrency}
+							isLoading={
+								isLoading &&
+								isLoadingCurrency &&
+								isLoadingWishes
+							}
 							data={plan}
 							EmptyComponent={
 								<Center>
@@ -259,7 +265,7 @@ export const PlanScreen = () => {
 								</Center>
 							}
 							NonEmptyComponent={
-								<Content>
+								<>
 									<Center>
 										<WishModal
 											buttonProps={{
@@ -312,13 +318,13 @@ export const PlanScreen = () => {
 											</SortableContext>
 										</Stack>
 									</DndContext>
-								</Content>
+								</>
 							}
 						/>
 					</Flex>
 				</Stack>
 			</Container>
-		</>
+		</Content>
 	);
 
 	function handlePlacementChange(
