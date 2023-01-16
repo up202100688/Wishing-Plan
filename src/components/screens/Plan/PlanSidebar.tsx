@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react';
 
 type PlanSidebarProps = {
 	plan?: Plan;
+	currency?: string;
 	onPlanSettingsChange: (
 		amountToSave: number,
 		currentAmountSaved: number,
@@ -42,7 +43,7 @@ export const PlanSidebar = (props: PlanSidebarProps) => {
 	const handleFirstSavingChange = (event: any) =>
 		setFirstSaving(new Date(event.target.value));
 
-	const [frequency, setFrequency] = useState('SOM');
+	const [frequency, setFrequency] = useState('som');
 	const handleFrequencyChange = (event: any) => {
 		setFrequency(event.target.value);
 	};
@@ -60,7 +61,7 @@ export const PlanSidebar = (props: PlanSidebarProps) => {
 	}, [props.plan?.firstSaving]);
 
 	useEffect(() => {
-		setFrequency(props.plan?.frequency ?? 'SOM');
+		setFrequency(props.plan?.frequency ?? 'som');
 	}, [props.plan?.frequency]);
 
 	const submitPlanSettingsChange = () => {
@@ -124,7 +125,7 @@ export const PlanSidebar = (props: PlanSidebarProps) => {
 								<NumberDecrementStepper />
 							</NumberInputStepper>
 						</NumberInput>
-						<InputRightAddon>DKK</InputRightAddon>
+						<InputRightAddon>{props.currency}</InputRightAddon>
 					</InputGroup>
 				</Tooltip>
 
@@ -158,7 +159,7 @@ export const PlanSidebar = (props: PlanSidebarProps) => {
 								<NumberDecrementStepper />
 							</NumberInputStepper>
 						</NumberInput>
-						<InputRightAddon>DKK</InputRightAddon>
+						<InputRightAddon>{props.currency}</InputRightAddon>
 					</InputGroup>
 				</Tooltip>
 				<Text

@@ -219,7 +219,7 @@ export const PlanScreen = () => {
 				>
 					<EmptyStateWrapper
 						isLoading={
-							isLoading && isLoadingCurrency && isLoadingWishes
+							isLoading || isLoadingCurrency
 						}
 						data={plan}
 						EmptyComponent={
@@ -236,6 +236,7 @@ export const PlanScreen = () => {
 						NonEmptyComponent={
 							<PlanSidebar
 								plan={plan ?? undefined}
+								currency={currency ?? undefined}
 								onPlanSettingsChange={onPlanSettingsChange}
 							/>
 						}
@@ -248,8 +249,8 @@ export const PlanScreen = () => {
 					>
 						<EmptyStateWrapper
 							isLoading={
-								isLoading &&
-								isLoadingCurrency &&
+								isLoading ||
+								isLoadingCurrency ||
 								isLoadingWishes
 							}
 							data={plan}
