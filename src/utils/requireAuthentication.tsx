@@ -3,10 +3,6 @@ import { getAuthSession } from './getServerSession';
 
 export function requireAuthentication(gssp: GetServerSideProps) {
 	return async (ctx: GetServerSidePropsContext) => {
-		ctx.res.setHeader(
-			'Cache-Control',
-			'public, s-maxage=1000, stale-while-revalidate=604800'
-		);
 		try {
 			// get current route
 			const route = ctx.resolvedUrl;
@@ -25,6 +21,10 @@ export function requireAuthentication(gssp: GetServerSideProps) {
 					},
 				};
 			} else {
+				ctx.res.setHeader(
+					'Cache-Control',
+					'public, s-maxage=1000, stale-while-revalidate=604800'
+				);
 				// If the user exists, return the props
 				return await gssp(ctx);
 			}
