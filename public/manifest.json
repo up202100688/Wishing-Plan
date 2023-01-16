@@ -57,6 +57,16 @@
 			"purpose": "maskable any"
 		}
 	],
+	"share_target":
+  {
+    "action": "/share",
+    "params":
+    {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
 	"theme_color": "#FFFFFF",
 	"background_color": "#FFFFFF",
 	"start_url": "/",
