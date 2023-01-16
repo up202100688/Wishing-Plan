@@ -15,6 +15,7 @@ import {
 	Text,
 	useColorModeValue,
 } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
 import NextLink from 'next/link';
 import { useState } from 'react';
 
@@ -24,6 +25,9 @@ export function HeroSection() {
 	const url = play
 		? `https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1`
 		: `https://www.youtube.com/embed/dQw4w9WgXcQ`;
+
+	const { data: sessionData } = useSession();
+	const getStartedURL = sessionData ? '/' : '/auth/signin';
 
 	return (
 		<Container maxW={'7xl'}>
@@ -95,7 +99,7 @@ export function HeroSection() {
 						spacing={{ base: 4, sm: 6 }}
 						direction={{ base: 'column', sm: 'row' }}
 					>
-						<Link as={NextLink} href={'/'}>
+						<Link as={NextLink} href={getStartedURL}>
 							<Button
 								rounded={'full'}
 								size={'lg'}
