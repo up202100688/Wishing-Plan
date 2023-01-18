@@ -222,8 +222,12 @@ export function PlanWishComponent(props: SortableItemProps) {
 						>
 							<NumberInputField />
 							<NumberInputStepper>
-								<NumberIncrementStepper />
-								<NumberDecrementStepper />
+								<NumberDecrementStepper
+									transform={'scaleY(-1)'}
+								/>
+								<NumberIncrementStepper
+									transform={'scaleY(-1)'}
+								/>
 							</NumberInputStepper>
 						</NumberInput>
 					</Center>
