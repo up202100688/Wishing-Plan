@@ -215,7 +215,7 @@ export function PlanWishComponent(props: SortableItemProps) {
 							}}
 							onBlur={submitPlacementChange}
 							onFocus={(e) => e.target.select()}
-							w={85}
+							w={{ base: '65px', sm: '85px' }}
 							p={0}
 							m={0}
 							min={1}
@@ -232,10 +232,20 @@ export function PlanWishComponent(props: SortableItemProps) {
 						</NumberInput>
 					</Center>
 
-					<CardBody pr={2} maxW={'85%'}>
-						<Flex maxW={'85%'}>
+					<CardBody
+						pr={2}
+						p={{ base: '0.5rem', sm: '0.5rem' }}
+						maxW={{
+							base: 'calc(100% - 8.2rem)',
+							sm: 'calc(100% - 9.5rem)',
+						}}
+						marginTop={{ base: 'auto', sm: '0' }}
+						marginBottom={{ base: 'auto', sm: '0' }}
+						alignItems="center"
+					>
+						<Flex>
 							<Image
-								boxSize="100px"
+								boxSize={{ base: '2.5rem', md: '100px' }}
 								borderRadius={'lg'}
 								objectFit="cover"
 								src={
@@ -245,21 +255,36 @@ export function PlanWishComponent(props: SortableItemProps) {
 								alt="Wish image"
 								mr={2}
 								mt={-0.1}
+								display={{
+									base: 'none',
+									md: 'block',
+								}}
 							/>
 							<Box
 								flex="1"
 								gap="2"
 								alignItems="center"
-								maxW={'85%'}
+								w={'70%'}
+								margin={{ base: 'auto', sm: '0' }}
 							>
-								<Tag colorScheme={tagColorScheme} size={'lg'}>
+								<Tag
+									colorScheme={tagColorScheme}
+									size={'lg'}
+									textAlign="center"
+									fontSize={{ base: 'xs', sm: 'sm' }}
+								>
 									{props.wish.timeLeft.text}
 								</Tag>
 								<Heading
-									maxW={'90%'}
+									fontSize={{
+										base: 'sm',
+										sm: 'lg',
+										md: 'xl',
+									}}
 									overflowX={'hidden'}
 									textOverflow={'ellipsis'}
 									whiteSpace={'nowrap'}
+									maxW={'80%'}
 								>
 									{props.wish.title}{' '}
 								</Heading>
@@ -272,11 +297,12 @@ export function PlanWishComponent(props: SortableItemProps) {
 									fontWeight={500}
 									fontSize={'lg'}
 									letterSpacing={1}
-									maxW={'90%'}
+									maxW={'65%'}
 									overflowX={'hidden'}
 									textOverflow={'ellipsis'}
 									whiteSpace={'nowrap'}
 									mb={-7}
+									display={{ base: 'none', sm: 'block' }}
 								>
 									{props.wish.description !== ''
 										? props.wish.description
@@ -292,7 +318,7 @@ export function PlanWishComponent(props: SortableItemProps) {
 									fontWeight={700}
 									fontSize={'lg'}
 									letterSpacing={1}
-									width={'120%'}
+									display={{ base: 'none', sm: 'block' }}
 								>
 									{props.wish.price} {props.currency}
 								</Text>
@@ -302,18 +328,19 @@ export function PlanWishComponent(props: SortableItemProps) {
 							mt={2}
 							colorScheme={'purple'}
 							value={props.wish.percentage}
+							display={{ base: 'none', sm: 'block' }}
 						/>
 					</CardBody>
 
-					<Grid ml={2} mr={2}>
+					<Grid m={2} alignContent="center">
 						<Menu>
 							<MenuButton
 								as={IconButton}
 								aria-label="Options"
 								icon={<HamburgerIcon />}
 								variant="outline"
-								mt={2}
 								colorScheme="blue"
+								mb={{ base: '2', sm: '6', md: '2' }}
 							/>
 							<MenuList>
 								<MenuItem
@@ -342,7 +369,9 @@ export function PlanWishComponent(props: SortableItemProps) {
 							{...listeners}
 							{...attributes}
 							aria-label="Drag to reorder"
+							display={{ base: 'none', md: 'inline-flex' }}
 							icon={<DragHandleIcon />}
+							mb={{ md: '2' }}
 						/>
 						<IconButton
 							onClick={(e) => {
