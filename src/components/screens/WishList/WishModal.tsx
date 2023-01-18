@@ -1,3 +1,4 @@
+import { InfoOutlineIcon, LinkIcon } from '@chakra-ui/icons';
 import type { ButtonProps } from '@chakra-ui/react';
 import {
 	Button,
@@ -5,6 +6,8 @@ import {
 	FormControl,
 	FormLabel,
 	Input,
+	InputGroup,
+	InputLeftElement,
 	Modal,
 	ModalBody,
 	ModalCloseButton,
@@ -109,7 +112,11 @@ export const WishModal = (props: WishModalProps) => {
 			<Button {...props.buttonProps} onClick={openModal}>
 				{props.buttonName}
 			</Button>
-			<Modal isOpen={isOpen} onClose={onClose}>
+			<Modal
+				isOpen={isOpen}
+				onClose={onClose}
+				size={{ base: 'xs', md: 'xl' }}
+			>
 				<ModalOverlay />
 
 				<ModalContent>
@@ -121,11 +128,17 @@ export const WishModal = (props: WishModalProps) => {
 						<form id="new-note" onSubmit={onSubmit}>
 							<FormControl>
 								<FormLabel>URL for Wish</FormLabel>
-								<Input
-									id="url"
-									type="url"
-									{...register('url')}
-								/>
+								<InputGroup>
+									<InputLeftElement pointerEvents="none">
+										<LinkIcon color="gray.300" />
+									</InputLeftElement>
+									<Input
+										id="url"
+										type="url"
+										placeholder="https://www.amazon.com/..."
+										{...register('url')}
+									/>
+								</InputGroup>
 							</FormControl>
 							<FormControl>
 								<Center mt={6} mb={2}>
@@ -134,21 +147,19 @@ export const WishModal = (props: WishModalProps) => {
 									</Button>
 								</Center>
 							</FormControl>
-							<FormControl>
-								<FormLabel>URL for Image</FormLabel>
-								<Input
-									id="imageUrl"
-									type="url"
-									{...register('imageUrl')}
-								/>
-							</FormControl>
 							<FormControl isRequired>
 								<FormLabel>Name of Wish</FormLabel>
-								<Input
-									id="title"
-									type="text"
-									{...register('title')}
-								/>
+								<InputGroup>
+									<InputLeftElement pointerEvents="none">
+										<InfoOutlineIcon color="gray.300" />
+									</InputLeftElement>
+									<Input
+										id="title"
+										type="text"
+										placeholder="Name of Wish"
+										{...register('title')}
+									/>
+								</InputGroup>
 							</FormControl>
 							<FormControl isRequired>
 								<FormLabel>Price of your Wish</FormLabel>
@@ -169,6 +180,20 @@ export const WishModal = (props: WishModalProps) => {
 										<NumberDecrementStepper />
 									</NumberInputStepper>
 								</NumberInput>
+							</FormControl>
+							<FormControl>
+								<FormLabel>URL for Image</FormLabel>
+								<InputGroup>
+									<InputLeftElement pointerEvents="none">
+										<LinkIcon color="gray.300" />
+									</InputLeftElement>
+									<Input
+										id="imageUrl"
+										type="url"
+										placeholder="https://website.com/image.jpg"
+										{...register('imageUrl')}
+									/>
+								</InputGroup>
 							</FormControl>
 							<FormControl>
 								<FormLabel>Describe your Wish</FormLabel>

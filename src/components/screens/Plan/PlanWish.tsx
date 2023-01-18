@@ -352,7 +352,11 @@ export function PlanWishComponent(props: SortableItemProps) {
 						/>
 					</Grid>
 				</Card>
-				<Modal isOpen={isOpen} onClose={onClose}>
+				<Modal
+					isOpen={isOpen}
+					onClose={onClose}
+					size={{ base: 'xs', md: 'xl' }}
+				>
 					<ModalOverlay />
 
 					<ModalContent>

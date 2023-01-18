@@ -63,7 +63,11 @@ export const WishListModal = (props: WishListModalProps) => {
 			<Button {...props.buttonProps} onClick={openModal}>
 				{props.buttonName}
 			</Button>
-			<Modal isOpen={isOpen} onClose={onClose}>
+			<Modal
+				isOpen={isOpen}
+				onClose={onClose}
+				size={{ base: 'xs', md: 'xl' }}
+			>
 				<ModalOverlay />
 
 				<ModalContent>
@@ -78,6 +82,7 @@ export const WishListModal = (props: WishListModalProps) => {
 								<Input
 									id="name"
 									type="text"
+									placeholder="Name of WishList"
 									{...register('name', {
 										required: true,
 									})}
