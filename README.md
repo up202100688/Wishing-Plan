@@ -8,6 +8,10 @@
 
 Wishing Plan allows the user to tracks savings and calculates purchase feasibility of the user's wishes. It will also become a hub for planning bigger purchases with others, creating individual or collective wish lists to share on occasions like birthdays and Christmas and more.
 
+<div align="center">
+    <img align="center" width="600" alt="" src="https://user-images.githubusercontent.com/39928082/213713001-b72c08f2-e861-4851-b58a-4fcf727ffeff.gif" />
+</div>
+
 # Open Source
 
 Wishting Plan is an open source project. We welcome contributions from the community. There are many ways to contribute to the project, from writing tutorials or blog posts, submitting bug reports and feature requests or writing code which can be incorporated into Wishing Plan itself. Here is a list of some of the ways you can contribute to the project:
