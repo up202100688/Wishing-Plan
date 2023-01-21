@@ -13,11 +13,17 @@ export const authOptions: NextAuthOptions = {
 	// Include user.id on session
 	callbacks: {
 		async signIn({ user }) {
-			return await signInChecks(user);
+			if (user.name) {
+				return true;
+			} else {
+				// User has no custom name yet, redirect him
+				return '/userInfo';
+			}
 		},
-		session({ session, user }) {
+		async session({ session, user }) {
 			if (session.user) {
 				session.user.id = user.id;
+				await signInChecks(session.user);
 			}
 			return session;
 		},

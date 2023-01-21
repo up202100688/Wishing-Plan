@@ -6,12 +6,6 @@ import type { AdapterUser } from 'next-auth/adapters';
 export async function signInChecks(user: User | AdapterUser) {
 	await hasSettingsCheck(user);
 	await hasPlanCheck(user);
-	if (user.name) {
-		return true;
-	} else {
-		// User has no custom name yet, redirect him
-		return '/userInfo';
-	}
 }
 async function hasSettingsCheck(user: User | AdapterUser) {
 	const settings = await prisma.userSettings.findFirst({
@@ -24,7 +18,11 @@ async function hasSettingsCheck(user: User | AdapterUser) {
 		// create settings in prisma
 		await prisma.userSettings.create({
 			data: {
-				userId: user.id,
+				user: {
+					connect: {
+						id: user.id,
+					},
+				},
 				currency: 'USD',
 			},
 		});
@@ -42,7 +40,11 @@ async function hasPlanCheck(user: User | AdapterUser) {
 		// create plan in prisma
 		await prisma.plan.create({
 			data: {
-				userId: user.id,
+				user: {
+					connect: {
+						id: user.id,
+					},
+				},
 				amountToSave: 0,
 				currentAmountSaved: 0,
 				firstSaving: new Date(),

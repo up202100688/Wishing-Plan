@@ -2,11 +2,11 @@ import type { PlanWish } from '@prisma/client';
 import type { PlanWishType } from '@server/trpc/router/Plan/plan';
 
 export const SavingsFrequency = {
-	SOM: 'SOM',
-	EOM: 'EOM',
-	ED: 'ED',
-	EW: 'EW',
-	E14D: 'E14D',
+	SOM: 'som',
+	EOM: 'eom',
+	ED: 'ed',
+	EW: 'ew',
+	E14D: 'e14d',
 } as const;
 
 export function updatePlacement(
