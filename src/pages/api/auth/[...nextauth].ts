@@ -45,10 +45,12 @@ export const authOptions: NextAuthOptions = {
 					response_type: 'code',
 				},
 			},
+			allowDangerousEmailAccountLinking: true,
 		}),
 		DiscordProvider({
 			clientId: env.DISCORD_CLIENT_ID,
 			clientSecret: env.DISCORD_CLIENT_SECRET,
+			allowDangerousEmailAccountLinking: true,
 		}),
 	],
 	theme: {
