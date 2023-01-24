@@ -12,8 +12,10 @@ import {
 	useColorModeValue,
 } from '@chakra-ui/react';
 import type { GetServerSidePropsContext } from 'next';
+import type { ClientSafeProvider } from 'next-auth/react';
 import { getProviders, getSession, signIn } from 'next-auth/react';
 import NextLink from 'next/link';
+import type { ChangeEvent } from 'react';
 import { useState } from 'react';
 import type { IconType } from 'react-icons';
 import { FaDiscord, FaGoogle } from 'react-icons/fa';
@@ -21,7 +23,8 @@ import { FaDiscord, FaGoogle } from 'react-icons/fa';
 import { Content } from '../../components/layouts/Content';
 
 type formButtonProps = {
-	provider: any;
+	// return type of getProviders()
+	provider: ClientSafeProvider;
 };
 
 const FormButton = (props: formButtonProps) => {
@@ -71,9 +74,13 @@ const FormButton = (props: formButtonProps) => {
 	);
 };
 
-export default function SimpleCard({ providers }: { providers: any }) {
+export default function SimpleCard({
+	providers,
+}: {
+	providers: ClientSafeProvider[];
+}) {
 	const [email, setEmail] = useState('');
-	const handleSubmit = (event: any) => {
+	const handleSubmit = (event: ChangeEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
 		signIn('email', {
@@ -88,11 +95,7 @@ export default function SimpleCard({ providers }: { providers: any }) {
 					<Heading fontSize={'4xl'}>Sign in to your account</Heading>
 					<Text fontSize={'lg'} color={'gray.600'}>
 						to enjoy all of our cool{' '}
-						<Link
-							as={NextLink}
-							color={'blue.400'}
-							href={'/features'}
-						>
+						<Link as={NextLink} color={'blue.400'} href={'/features'}>
 							features
 						</Link>{' '}
 						✌️
@@ -112,9 +115,7 @@ export default function SimpleCard({ providers }: { providers: any }) {
 								<Input
 									type="email"
 									placeholder="Email (Not Setup - Please Use Google/Discord)"
-									onChange={(event) =>
-										setEmail(event.currentTarget.value)
-									}
+									onChange={(event) => setEmail(event.currentTarget.value)}
 								/>
 							</FormControl>
 
@@ -136,12 +137,9 @@ export default function SimpleCard({ providers }: { providers: any }) {
 							<Stack spacing={5}>
 								{providers &&
 									Object.values(providers).map(
-										(provider: any) => (
-											<FormButton
-												key={provider.name}
-												provider={provider}
-											/>
-										)
+										(provider: ClientSafeProvider) => (
+											<FormButton key={provider.name} provider={provider} />
+										),
 									)}
 							</Stack>
 						</Stack>
@@ -155,7 +153,7 @@ export default function SimpleCard({ providers }: { providers: any }) {
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 	ctx.res.setHeader(
 		'Cache-Control',
-		'public, s-maxage=1000, stale-while-revalidate=604800'
+		'public, s-maxage=1000, stale-while-revalidate=604800',
 	);
 
 	const session = await getSession(ctx);
