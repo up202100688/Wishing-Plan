@@ -1,8 +1,9 @@
 import {
 	removePlacement,
+	SavingsFrequency,
 	updatePlacement,
 } from '@components/screens/Plan/planUtils';
-import type { Wish } from '@prisma/client';
+import type { Plan, PlanWish, Prisma, Wish } from '@prisma/client';
 import type { Context } from '@server/trpc/context';
 import { assertHasAccessToPlan } from '@server/trpc/utils/assertHasAccessToPlan';
 import { TRPCError } from '@trpc/server';
@@ -16,37 +17,110 @@ export interface PlanWishType extends Wish {
 }
 
 export const planRouter = router({
-	get: protectedProcedure.query(({ ctx }) => {
+	get: protectedProcedure
+		.input(
+			z.object({
+				planId: z.string().nullish(),
+			}),
+		)
+		.query(({ input, ctx }) => {
+			if (!input.planId) {
+				return getMainPlan(ctx);
+			} else {
+				return getPlan(ctx, input.planId);
+			}
+		}),
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const userId = ctx.session?.user?.id;
 
-		return ctx.prisma.plan.findFirst({ where: { userId: userId } });
-	}),
-	getWishes: protectedProcedure.query(async ({ ctx }) => {
-		const planId = await getPlanIdFromSession(ctx);
-		assertHasAccessToPlan(ctx, planId);
+		const plans = await ctx.prisma.plan.findMany({
+			where: {
+				OR: [
+					{
+						userId,
+						mainUser: null,
+					},
+					{
+						sharedWith: {
+							some: {
+								id: userId,
+							},
+						},
+					},
+				],
+			},
+		});
 
-		return ctx.prisma.planWish
-			.findMany({
-				where: { planId: planId },
-				orderBy: { placement: 'asc' },
-				include: { wish: true },
-			})
-			.then((planWishes) => {
-				let currentSum = 0;
-				return planWishes.map((planWish) => {
-					const wishSum = currentSum + planWish.wish.price;
-					currentSum = wishSum;
-					return {
-						...planWish.wish,
-						placement: planWish.placement,
-						sumOfMoney: wishSum,
-					};
-				});
-			});
+		return plans;
 	}),
+	create: protectedProcedure
+		.input(
+			z.object({
+				name: z.string(),
+				description: z.string().nullish(),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const userId = ctx.session?.user?.id;
+
+			const plan = await ctx.prisma.plan.create({
+				data: {
+					user: {
+						connect: { id: userId },
+					},
+					name: input.name,
+					description: input.description,
+					amountToSave: 0,
+					currentAmountSaved: 0,
+					firstSaving: new Date(),
+					frequency: SavingsFrequency.SOM,
+				},
+			});
+
+			return plan;
+		}),
+	edit: protectedProcedure
+		.input(
+			z.object({
+				planId: z.string(),
+				name: z.string(),
+				description: z.string().nullish(),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const planId = input.planId;
+			await assertHasAccessToPlan(ctx, planId);
+
+			const plan = await ctx.prisma.plan.update({
+				where: { id: planId },
+				data: {
+					name: input.name,
+					description: input.description,
+				},
+			});
+
+			return plan;
+		}),
+	delete: protectedProcedure
+		.input(
+			z.object({
+				planId: z.string(),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const planId = input.planId;
+			await assertHasAccessToPlan(ctx, planId);
+
+			const plan = await ctx.prisma.plan.delete({
+				where: { id: planId },
+			});
+
+			return plan;
+		}),
 	createAndAddWish: protectedProcedure
 		.input(
 			z.object({
+				planId: z.string().nullish(),
 				wishTitle: z.string(),
 				wishDescription: z.string().nullish(),
 				wishPrice: z.number(),
@@ -55,8 +129,8 @@ export const planRouter = router({
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const planId = await getPlanIdFromSession(ctx);
-			assertHasAccessToPlan(ctx, planId);
+			const planId = input.planId ?? (await getPlanIdFromSession(ctx));
+			await assertHasAccessToPlan(ctx, planId);
 
 			const userId = ctx.session?.user?.id;
 
@@ -116,6 +190,7 @@ export const planRouter = router({
 	editWish: protectedProcedure
 		.input(
 			z.object({
+				planId: z.string().nullish(),
 				wishId: z.string(),
 				wishTitle: z.string(),
 				wishDescription: z.string().nullish(),
@@ -126,9 +201,9 @@ export const planRouter = router({
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const planId = await getPlanIdFromSession(ctx);
+			const planId = input.planId ?? (await getPlanIdFromSession(ctx));
 
-			assertHasAccessToPlan(ctx, planId);
+			await assertHasAccessToPlan(ctx, planId);
 
 			const planWish = await ctx.prisma.planWish.findFirst({
 				where: { planId: planId, wishId: input.wishId },
@@ -161,28 +236,17 @@ export const planRouter = router({
 	relocateWish: protectedProcedure
 		.input(
 			z.object({
+				planId: z.string().nullish(),
 				wishId: z.string(),
 				oldIndex: z.number(),
 				newIndex: z.number(),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const planId = await getPlanIdFromSession(ctx);
+			const planId = input.planId ?? (await getPlanIdFromSession(ctx));
+			await assertHasAccessToPlan(ctx, planId);
 
-			assertHasAccessToPlan(ctx, planId);
-
-			const planWish = await ctx.prisma.planWish.findFirst({
-				where: { planId: planId, wishId: input.wishId },
-			});
-
-			if (!planWish) {
-				throw new TRPCError({ code: 'NOT_FOUND' });
-			}
-
-			const planWishes = await ctx.prisma.planWish.findMany({
-				where: { planId: planId },
-				orderBy: { placement: 'asc' },
-			});
+			const { planWishes } = await getPlanWishes(ctx, planId, input.wishId);
 
 			const newPlanWishes = updatePlacement(
 				planWishes,
@@ -201,28 +265,17 @@ export const planRouter = router({
 		}),
 	deleteWish: protectedProcedure
 
-		.input(
-			z.object({
-				wishId: z.string(),
-			}),
-		)
+		.input(z.object({ planId: z.string().nullish(), wishId: z.string() }))
 		.mutation(async ({ input, ctx }) => {
-			const planId = await getPlanIdFromSession(ctx);
+			const planId = input.planId ?? (await getPlanIdFromSession(ctx));
 
-			assertHasAccessToPlan(ctx, planId);
+			await assertHasAccessToPlan(ctx, planId);
 
-			const planWish = await ctx.prisma.planWish.findFirst({
-				where: { planId: planId, wishId: input.wishId },
-			});
-
-			if (!planWish) {
-				throw new TRPCError({ code: 'NOT_FOUND' });
-			}
-
-			const planWishes = await ctx.prisma.planWish.findMany({
-				where: { planId: planId },
-				orderBy: { placement: 'asc' },
-			});
+			const { planWishes, planWish } = await getPlanWishes(
+				ctx,
+				planId,
+				input.wishId,
+			);
 
 			const newPlanWishes = removePlacement(planWishes, planWish.placement);
 
@@ -247,6 +300,7 @@ export const planRouter = router({
 	updatePlan: protectedProcedure
 		.input(
 			z.object({
+				planId: z.string().nullish(),
 				amountToSave: z.number(),
 				currentAmountSaved: z.number(),
 				firstSaving: z.date(),
@@ -254,13 +308,12 @@ export const planRouter = router({
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const planId = await getPlanIdFromSession(ctx);
+			const planId = input.planId ?? (await getPlanIdFromSession(ctx));
 
-			assertHasAccessToPlan(ctx, planId);
-			const userId = ctx.session?.user?.id;
+			await assertHasAccessToPlan(ctx, planId);
 
 			return ctx.prisma.plan.update({
-				where: { userId: userId },
+				where: { id: planId },
 				data: {
 					amountToSave: input.amountToSave,
 					currentAmountSaved: input.currentAmountSaved,
@@ -269,7 +322,137 @@ export const planRouter = router({
 				},
 			});
 		}),
+	sharePlan: protectedProcedure
+		.input(
+			z.object({
+				planId: z.string().nullish(),
+				emails: z.array(z.string()),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const planId = input.planId ?? (await getPlanIdFromSession(ctx));
+
+			await assertHasAccessToPlan(ctx, planId);
+
+			const plan = ctx.prisma.plan.findUnique({
+				where: { id: planId },
+			});
+
+			if (!plan) {
+				throw new TRPCError({ code: 'NOT_FOUND' });
+			}
+
+			const users = await ctx.prisma.user.findMany({
+				where: { email: { in: input.emails } },
+			});
+
+			const sharedWith = await plan.sharedWith();
+
+			if (!sharedWith) {
+				throw new TRPCError({ code: 'NOT_FOUND' });
+			}
+
+			const newSharedWith = users.filter(
+				(user) => !sharedWith.find((shared) => shared.id === user.id),
+			);
+
+			return await ctx.prisma.plan.update({
+				where: { id: planId },
+				data: {
+					sharedWith: {
+						connect: newSharedWith.map((user) => ({ id: user.id })),
+					},
+				},
+			});
+		}),
 });
+
+async function getPlanWishes(ctx: Context, planId: string, wishId: string) {
+	const planWish = await ctx.prisma.planWish.findFirst({
+		where: { planId: planId, wishId },
+	});
+
+	if (!planWish) {
+		throw new TRPCError({ code: 'NOT_FOUND' });
+	}
+
+	const planWishes = await ctx.prisma.planWish.findMany({
+		where: { planId: planId },
+		orderBy: { placement: 'asc' },
+	});
+	return { planWish, planWishes };
+}
+
+async function getMainPlan(ctx: Context) {
+	const userId = ctx.session?.user?.id;
+
+	const planPromise = ctx.prisma.user
+		.findUnique({ where: { id: userId } })
+		.mainPlan();
+
+	return modifyPlan(planPromise, ctx);
+}
+
+async function getPlan(ctx: Context, planId: string) {
+	const planPromise = ctx.prisma.plan.findUnique({
+		where: { id: planId },
+	});
+
+	return modifyPlan(planPromise, ctx);
+}
+
+async function modifyPlan(
+	planPromise: Prisma.Prisma__PlanClient<Plan | null, null>,
+	ctx: Context,
+) {
+	const sharedWith = await planPromise.sharedWith();
+	let owner = await planPromise.mainUser();
+	if (!owner) {
+		owner = await planPromise.user();
+	}
+
+	const plan = await planPromise;
+	if (!plan) {
+		throw new TRPCError({
+			code: 'NOT_FOUND',
+			message: 'Plan not found',
+		});
+	}
+
+	// get wishes
+	return ctx.prisma.planWish
+		.findMany({
+			where: { planId: plan.id },
+			orderBy: { placement: 'asc' },
+			include: { wish: true },
+		})
+		.then((planWishes) => {
+			return appendPlacementAndSumOfMoney(planWishes);
+		})
+		.then((wishes) => {
+			return {
+				plan: { ...plan },
+				sharedWith: sharedWith ?? [],
+				owner: owner ?? null,
+				wishes,
+			};
+		});
+}
+
+function appendPlacementAndSumOfMoney(
+	planWishes: (PlanWish & { wish: Wish })[],
+) {
+	let currentSum = 0;
+	return planWishes.map((planWish) => {
+		const wishSum = currentSum + planWish.wish.price;
+		currentSum = wishSum;
+		return {
+			...planWish.wish,
+			placement: planWish.placement,
+			sumOfMoney: wishSum,
+		};
+	});
+}
 
 async function getPlanIdFromSession(ctx: Context) {
 	const userId = ctx.session?.user?.id;
@@ -279,10 +462,7 @@ async function getPlanIdFromSession(ctx: Context) {
 
 	// get planId from userId
 	const planId = (
-		await ctx.prisma.plan.findFirst({
-			where: { userId: userId },
-			select: { id: true },
-		})
+		await ctx.prisma.user.findUnique({ where: { id: userId } }).mainPlan()
 	)?.id;
 
 	if (!planId || planId === undefined) {

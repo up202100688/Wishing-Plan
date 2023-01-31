@@ -9,25 +9,25 @@ import {
 import { EmptyStateWrapper } from '@components/EmptyStateWrapper';
 import { Content } from '@components/layouts/Content';
 import { trpc } from '@utils/trpc';
-import { GenericListModal } from '../../common/Modal/GenericListModal';
-import { WishListsList } from './WishListsList';
+import { GenericListModal } from '../../../common/Modal/GenericListModal';
+import { SharedPlansList } from './SharedPlansList';
 
 export type WishListForm = {
 	name: string;
 	description: string;
 };
 
-export const DashboardScreen = () => {
+export const SharedPlansScreen = () => {
 	const {
-		data: wishLists,
+		data: plans,
 		isLoading,
 		refetch: refetchWishLists,
-	} = trpc.wishList.getAll.useQuery();
+	} = trpc.plan.getAll.useQuery();
 
-	const createWishList = trpc.wishList.create.useMutation();
+	const createPlan = trpc.plan.create.useMutation();
 
 	const onSubmit = async (name: string, description: string) => {
-		await createWishList.mutateAsync({
+		await createPlan.mutateAsync({
 			name: name,
 			description: description,
 		});
@@ -40,40 +40,39 @@ export const DashboardScreen = () => {
 				<Container maxW="container.xl">
 					<Center h="100px" mb={6} mt={4}>
 						<Flex direction="column" gap={4}>
-							<Heading>Wish Lists</Heading>
+							<Heading>Shared Plans</Heading>
 							<GenericListModal
 								buttonProps={{
 									variant: 'solid',
 									colorScheme: 'green',
 								}}
-								buttonName="Create a new Wish List"
+								buttonName="Create a New Plan"
 								labels={{
 									name: 'Name',
 									description: 'Description',
 								}}
 								placeholders={{
-									name: 'Name of the Wish List',
-									description: 'Description of the Wish List',
+									name: 'Name of the Plan',
+									description: 'Description of the Plan',
 								}}
 								onSubmit={onSubmit}
 							/>
 						</Flex>
 					</Center>
-					{/* TODO: replace with skeleton setup in future */}
 					<EmptyStateWrapper
 						isLoading={isLoading}
-						data={wishLists}
+						data={plans}
 						EmptyComponent={
 							<Center>
 								<Tag size={'lg'} variant="solid" colorScheme="teal">
-									No Wish Lists
+									No WishLists
 								</Tag>
 							</Center>
 						}
 						NonEmptyComponent={
-							<WishListsList
+							<SharedPlansList
 								refreshListFunc={refetchWishLists}
-								wishLists={wishLists ?? []}
+								wishLists={plans ?? []}
 							/>
 						}
 					/>

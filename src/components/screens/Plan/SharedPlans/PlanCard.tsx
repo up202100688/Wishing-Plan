@@ -10,34 +10,34 @@ import {
 	useColorModeValue,
 } from '@chakra-ui/react';
 import { DeleteAlert } from '@components/common/Alert/DeleteAlert';
-import type { WishList } from '@prisma/client';
+import type { Plan } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import router from 'next/router';
-import { GenericListModal } from '../../common/Modal/GenericListModal';
+import { GenericListModal } from '../../../common/Modal/GenericListModal';
 
-export const WishListCard = ({
-	wishList,
+export const PlanCard = ({
+	plan,
 	refreshListFunc,
 }: {
-	wishList: WishList;
+	plan: Plan;
 	refreshListFunc?: () => void;
 }) => {
-	const deleteWishList = trpc.wishList.delete.useMutation();
+	const deleteWishList = trpc.plan.delete.useMutation();
 
 	const onDelete = async () => {
-		await deleteWishList.mutateAsync({ id: wishList.id });
+		await deleteWishList.mutateAsync({ planId: plan.id });
 		if (refreshListFunc) refreshListFunc();
 	};
 
-	const editWishList = trpc.wishList.update.useMutation();
+	const editWishList = trpc.plan.edit.useMutation();
 
 	const onSubmit = async (name: string, description: string) => {
 		await editWishList.mutateAsync({
-			id: wishList.id,
+			planId: plan.id,
 			name: name,
 			description: description,
 		});
-		if (refreshListFunc) await refreshListFunc();
+		if (refreshListFunc) refreshListFunc();
 	};
 
 	return (
@@ -47,10 +47,10 @@ export const WishListCard = ({
 				background={useColorModeValue('gray.100', 'gray.700')}
 			>
 				<CardHeader>
-					<Heading size="md"> {wishList.name}</Heading>
+					<Heading size="md"> {plan?.name}</Heading>
 				</CardHeader>
 				<CardBody>
-					<Text>{wishList.description}</Text>
+					<Text>{plan?.description}</Text>
 				</CardBody>
 				<CardFooter
 					justify="start"
@@ -67,11 +67,12 @@ export const WishListCard = ({
 						colorScheme="purple"
 						variant="solid"
 						onClick={() => {
-							router.push(`/wishlists/${wishList.id}`);
+							router.push(`/shared-plans/${plan.id}`);
 						}}
 					>
 						View here
 					</Button>
+
 					<GenericListModal
 						buttonProps={{
 							mr: 2,
@@ -86,18 +87,18 @@ export const WishListCard = ({
 							description: 'Description',
 						}}
 						placeholders={{
-							name: 'Name of the Wish List',
-							description: 'Description of the Wish List',
+							name: 'Name of the Plan',
+							description: 'Description of the Plan',
 						}}
 						existingSharedItem={{
-							name: wishList.name ?? '',
-							description: wishList.description ?? '',
+							name: plan.name ?? '',
+							description: plan.description ?? '',
 						}}
 					/>
 
 					<DeleteAlert
 						typeToDelete="WishList"
-						entityName={wishList.name}
+						entityName={plan?.name ?? 'WishList'}
 						onDelete={onDelete}
 					/>
 				</CardFooter>

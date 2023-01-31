@@ -69,19 +69,23 @@ model ShortLink {
 }
 
 model User {
-  id              String        @id @default(cuid())
-  name            String?
-  email           String?       @unique
-  password        String?
-  emailVerified   DateTime?
-  image           String?
-  accounts        Account[]
-  sessions        Session[]
-  settings        UserSettings?
-  wishes          Wish[]
-  wishLists       WishList[]    @relation("WishLists")
-  sharedWishLists WishList[]    @relation("SharedWishLists")
-  plans           Plan[]
+  id                String         @id @default(cuid())
+  name              String?
+  email             String?        @unique
+  password          String?
+  emailVerified     DateTime?
+  image             String?
+  accounts          Account[]
+  sessions          Session[]
+  settings          UserSettings?
+  wishes            Wish[]
+  wishLists         WishList[]     @relation("WishLists")
+  sharedWishLists   WishList[]     @relation("SharedWishLists")
+  mainPlan          Plan?          @relation("MainPlan")
+  plans             Plan[]         @relation("Plans")
+  sharedPlans       Plan[]         @relation("SharedPlans")
+  notifications     Notification[] @relation("toUser")
+  sentNotifications Notification[] @relation("fromUser")
 }
 
 model UserSettings {
@@ -96,48 +100,69 @@ model UserSettings {
 }
 
 model Plan {
-  id                    String   @id @default(cuid())
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  currentAmountSaved    Int
-  amountToSave          Int
-  firstSaving           DateTime
-  frequency             String
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                String   @unique
-  wishes                Wish[]
-  wishBridges           PlanWish[]
+  id                 String     @id @default(cuid())
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  name               String?
+  description        String?
+  currentAmountSaved Int
+  amountToSave       Int
+  firstSaving        DateTime
+  frequency          String
+  user               User?      @relation(name: "Plans", fields: [userId], references: [id], onDelete: Cascade)
+  userId             String?
+  mainUser           User?      @relation(name: "MainPlan", fields: [mainUserId], references: [id], onDelete: Cascade)
+  mainUserId         String?    @unique
+  sharedWith         User[]     @relation(name: "SharedPlans")
+  wishes             Wish[]
+  wishBridges        PlanWish[]
 
   @@index([userId])
 }
 
 model PlanWish {
-  id      String   @id @default(cuid())
-  plan    Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
-  planId  String
-  wish    Wish     @relation(fields: [wishId], references: [id], onDelete: Cascade)
-  wishId  String
+  id        String @id @default(cuid())
+  plan      Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  planId    String
+  wish      Wish   @relation(fields: [wishId], references: [id], onDelete: Cascade)
+  wishId    String
   placement Int
 
   @@index([planId])
   @@index([wishId])
-	@@map("PlanWishBridge")
+  @@map("PlanWishBridge")
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  title      String
+  message    String
+  type       String
+  toUser     User     @relation(name: "toUser", fields: [toUserId], references: [id], onDelete: Cascade)
+  toUserId   String   @map("userId")
+  fromUser   User?    @relation(name: "fromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
+  fromUserId String?
+
+  @@index([toUserId])
+  @@index([fromUserId])
 }
 
 model Wish {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   title       String
   description String?
   price       Int
   url         String
   imageUrl    String?
-  creator     User      @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creator     User       @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId   String
-  wishList    WishList? @relation(fields: [wishListId], references: [id], onDelete: Cascade)
+  wishList    WishList?  @relation(fields: [wishListId], references: [id], onDelete: Cascade)
   wishListId  String?
-  plan        Plan?     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  plan        Plan?      @relation(fields: [planId], references: [id], onDelete: Cascade)
   planId      String?
   wishBridges PlanWish[]
 
