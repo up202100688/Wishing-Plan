@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react';
 
-import { Box, Center } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import Head from 'next/head';
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { Triangle } from 'react-loader-spinner';
 import Footer from '../common/Footer/Footer';
 import Navbar from '../common/Header/Navbar';
 
@@ -18,18 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
 	const router = useRouter();
 
 	if (status === 'loading') {
-		return (
-			<Center height="100vh" width="100vw">
-				<Triangle
-					height="50vh"
-					width="50vw"
-					color="#ba3f86"
-					ariaLabel="triangle-loading"
-					wrapperStyle={{}}
-					visible={true}
-				/>
-			</Center>
-		);
+		return <></>;
 	}
 	return (
 		<Box as="main">

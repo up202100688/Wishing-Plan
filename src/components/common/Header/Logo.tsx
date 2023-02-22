@@ -1,4 +1,4 @@
-import { Text, useColorModeValue } from '@chakra-ui/react';
+import { Tag, Text, useColorModeValue } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -20,7 +20,11 @@ const LogoBox = styled.span`
 	}
 `;
 
-const Logo = () => {
+type LogoProps = {
+	showVersion?: boolean;
+};
+
+const Logo = (props: LogoProps) => {
 	const { data: sessionData } = useSession();
 
 	const url = sessionData ? '/' : '/product';
@@ -38,6 +42,18 @@ const Logo = () => {
 				>
 					Wishing Plan
 				</Text>
+
+				{props.showVersion && (
+					<Tag
+						size="md"
+						ml={2}
+						colorScheme="purple"
+						letterSpacing={'tight'}
+						fontWeight="bold"
+					>
+						Alpha
+					</Tag>
+				)}
 			</LogoBox>
 		</Link>
 	);
