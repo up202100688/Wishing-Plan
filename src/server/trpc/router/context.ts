@@ -2,7 +2,7 @@
 import { prisma } from '@server/db/client';
 import type * as trpc from '@trpc/server';
 import type * as trpcNext from '@trpc/server/adapters/next';
-import { unstable_getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth';
 import { authOptions } from 'src/pages/api/auth/[...nextauth]';
 
 export const createContext = async (
@@ -11,8 +11,7 @@ export const createContext = async (
 	const req = opts?.req;
 	const res = opts?.res;
 
-	const session =
-		req && res && (await unstable_getServerSession(req, res, authOptions));
+	const session = req && res && (await getServerSession(req, res, authOptions));
 
 	return {
 		session,
