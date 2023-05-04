@@ -141,6 +141,7 @@ export const WishModal = (props: WishModalProps) => {
                   <Input
                     id="url"
                     type="url"
+                    autoComplete="off"
                     placeholder="https://www.amazon.com/..."
                     {...register("url")}
                   />
@@ -192,6 +193,7 @@ export const WishModal = (props: WishModalProps) => {
                   <Input
                     id="imageUrl"
                     type="url"
+                    autoComplete="off"
                     placeholder="https://website.com/image.jpg"
                     {...register("imageUrl")}
                   />
